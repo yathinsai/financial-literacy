@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Literacy for Teens</title>
+<style>
+:root{
+  --navy:#123b6d; --blue:#2878c8; --teal:#169c9a; --green:#3b9b5f;
+  --gold:#e9a51a; --purple:#7651a9; --pink:#c94b72; --ink:#17324d;
+  --muted:#60758a; --bg:#eef4f9; --white:#fff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Inter,Segoe UI,Arial,sans-serif;background:#0d2e52;color:var(--ink)}
+body{overflow:hidden}
+.deck{height:100vh;width:100vw;position:relative}
+.slide{
+  display:none;height:100vh;width:100vw;padding:54px 7vw 60px;
+  background:linear-gradient(135deg,#f8fbfe 0%,#edf5fb 100%);
+  position:relative;overflow:hidden;
+}
+.slide.active{display:flex;flex-direction:column}
+.slide:after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+background:rgba(40,120,200,.06);right:-170px;bottom:-190px}
+.kicker{font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+h1{font-size:clamp(40px,5vw,74px);line-height:1.02;margin:0 0 18px;color:var(--navy)}
+h2{font-size:clamp(32px,4vw,54px);line-height:1.08;margin:0 0 18px;color:var(--navy)}
+h3{margin:0 0 8px;font-size:22px}
+p{font-size:20px;line-height:1.5;margin:8px 0;color:#38536a}
+.subtitle{font-size:25px;max-width:850px;color:#47647d}
+.hero{justify-content:center}
+.hero .tag{display:inline-block;background:#dcecfb;color:var(--navy);padding:10px 16px;border-radius:999px;font-weight:800;margin:10px 0 20px}
+.quote{font-size:28px;font-weight:700;color:var(--navy);max-width:900px;margin-top:20px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px;z-index:1}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:rgba(255,255,255,.94);border:1px solid #d9e5ef;border-radius:22px;padding:22px;box-shadow:0 10px 28px rgba(20,55,85,.08)}
+.card.accent-blue{border-top:7px solid var(--blue)}
+.card.accent-green{border-top:7px solid var(--green)}
+.card.accent-gold{border-top:7px solid var(--gold)}
+.card.accent-purple{border-top:7px solid var(--purple)}
+.card.accent-pink{border-top:7px solid var(--pink)}
+.icon{font-size:42px;margin-bottom:8px}
+ul{margin:10px 0 0 20px;padding:0}
+li{font-size:18px;line-height:1.45;margin:7px 0}
+.scenario{background:linear-gradient(135deg,#123b6d,#1e629f);color:white;border-radius:24px;padding:28px 32px;margin-top:20px;z-index:1}
+.scenario h3,.scenario p,.scenario li{color:white}
+.question{font-size:30px;font-weight:800;color:var(--navy);margin:18px 0}
+.choice-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.choice{color:black;padding:12px 18px;background:white;border:2px solid #c9dbea;border-radius:14px;font-weight:700;font-size:18px}
+.big-number{font-size:58px;font-weight:900;color:var(--blue)}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:28px 0;z-index:1}
+.flow .step{background:white;border-radius:20px;padding:20px 22px;min-width:130px;text-align:center;box-shadow:0 8px 20px rgba(20,55,85,.08);font-weight:900;color:var(--navy)}
+.flow .arrow{font-size:28px;color:var(--blue);font-weight:900}
+.table{width:100%;border-collapse:separate;border-spacing:0;margin-top:18px;background:white;border-radius:18px;overflow:hidden;box-shadow:0 8px 20px rgba(20,55,85,.07)}
+.table th,.table td{text-align:left;padding:14px 16px;border-bottom:1px solid #e4edf4;font-size:17px}
+.table th{background:#dcecfb;color:var(--navy)}
+.table tr:last-child td{border-bottom:none}
+.rule{display:grid;grid-template-columns:70px 1fr;gap:16px;align-items:center;background:white;border-radius:18px;padding:16px;margin:10px 0;box-shadow:0 7px 18px rgba(20,55,85,.07)}
+.rule b{font-size:30px;color:var(--blue);text-align:center}
+.rule strong{font-size:20px;color:var(--navy)}
+.rule span{display:block;color:#587086;margin-top:4px;font-size:16px}
+.goal{min-height:130px}
+.footer{position:absolute;left:7vw;right:7vw;bottom:20px;display:flex;justify-content:space-between;color:#6a8194;font-size:13px;z-index:5}
+.progress{position:fixed;left:0;bottom:0;height:5px;background:#2b83d2;z-index:20;width:0}
+.nav{position:fixed;right:24px;bottom:18px;display:flex;gap:8px;z-index:30}
+.nav button{border:0;border-radius:12px;background:#123b6d;color:white;width:42px;height:38px;font-size:18px;cursor:pointer}
+.nav button:hover{background:#2878c8}
+.note{font-size:14px;color:#70869a;margin-top:14px}
+.badge{display:inline-block;padding:7px 11px;border-radius:10px;background:#eef6ff;color:var(--blue);font-weight:800;margin:4px}
+.center{text-align:center}
+.two-col{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:center;z-index:1}
+.checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
+.check{background:white;border-radius:15px;padding:15px;font-weight:700;box-shadow:0 7px 16px rgba(20,55,85,.06)}
+@media(max-width:800px){
+ .slide{padding:34px 5vw 55px}.grid,.grid.three,.two-col{grid-template-columns:1fr}
+ h1{font-size:42px}h2{font-size:36px}p{font-size:17px}li{font-size:16px}
+ .card{padding:17px}.question{font-size:23px}
+ .flow .step{min-width:105px;padding:14px}.footer{left:5vw;right:5vw}
+}
+@media print{
+ body{overflow:visible;background:white}.deck{height:auto}.slide{display:flex!important;height:100vh;page-break-after:always}
+ .nav,.progress{display:none}
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active hero">
+  <div class="kicker">Teen Volunteer Program • 45-Minute Session</div>
+  <h1>Financial Literacy<br>for Teens</h1>
+  <p class="subtitle">Money decisions that shape your future — through real-world scenarios, practical tools, and lessons learned.</p>
+  <div class="tag">EARN → MANAGE → SAVE → GROW → PROTECT → BUILD</div>
+  <p class="quote">“Financial literacy is not about having more money. It is about having more choices.”</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>01</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">01 • Why it matters</div><h2>Why Should Teens Care About Money?</h2>
+  <div class="scenario">
+    <h3>Real-world scenario</h3>
+    <p>Imagine you receive <strong>$1,000</strong> from a summer job, gift, or small business.</p>
+    <div class="choice-row"><div class="choice">Spend it</div><div class="choice">Save it</div><div class="choice">Invest it</div><div class="choice">Start a business</div></div>
+  </div>
+  <div class="grid three">
+    <div class="card accent-blue"><div class="icon">🧭</div><h3>Make choices</h3><p>Understand trade-offs before spending or borrowing.</p></div>
+    <div class="card accent-green"><div class="icon">🎯</div><h3>Reach goals</h3><p>Turn income into progress toward education, travel, or other goals.</p></div>
+    <div class="card accent-gold"><div class="icon">🛡️</div><h3>Avoid mistakes</h3><p>Recognize costly debt, scams, fees, and impulsive decisions.</p></div>
+  </div>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>02</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">02 • Money basics</div><h2>Understand Where Your Money Goes</h2>
+  <div class="flow">
+    <div class="step">💵 Income</div><div class="arrow">→</div>
+    <div class="step">🛒 Spending</div><div class="arrow">→</div>
+    <div class="step">💰 Saving</div><div class="arrow">→</div>
+    <div class="step">📈 Investing</div>
+  </div>
+  <div class="grid">
+    <div class="card accent-blue"><h3>Needs</h3><ul><li>Food and basic necessities</li><li>Transportation</li><li>School-related expenses</li><li>Essential communication</li></ul></div>
+    <div class="card accent-pink"><h3>Wants</h3><ul><li>Eating out frequently</li><li>Premium brands</li><li>Upgrading devices unnecessarily</li><li>Entertainment and impulse purchases</li></ul></div>
+  </div>
+  <p class="question">Ask yourself: “Is this a need, a want, or something in between?”</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>03</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">03 • Budgeting</div><h2>Build a Budget for Your First Paycheck</h2>
+  <div class="scenario">
+    <h3>Scenario: Alex earns $1,500 per month.</h3>
+    <p>The goal is not to spend everything. The goal is to give every dollar a purpose.</p>
+  </div>
+  <table class="table">
+    <tr><th>Category</th><th>Example Amount</th><th>Purpose</th></tr>
+    <tr><td>Transportation</td><td>$250</td><td>Getting to school/work</td></tr>
+    <tr><td>Food</td><td>$250</td><td>Meals and essentials</td></tr>
+    <tr><td>Phone</td><td>$60</td><td>Communication</td></tr>
+    <tr><td>Entertainment</td><td>$150</td><td>Fun and social activities</td></tr>
+    <tr><td>Savings</td><td>$300</td><td>Future goals / emergencies</td></tr>
+    <tr><td>Other</td><td>$200</td><td>Flexible spending</td></tr>
+  </table>
+  <p class="note">The remaining amount can be assigned to additional savings, goals, or necessary expenses. A real budget should reflect actual income and costs.</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>04</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">04 • Smart spending</div><h2>Before You Buy: Pause. Compare. Decide.</h2>
+  <div class="two-col">
+    <div class="scenario">
+      <h3>The $200 Shoes</h3>
+      <p>You have <strong>$250</strong> in your account. Your favorite shoes are on sale for $200 — today only.</p>
+      <p class="question" style="color:white">Would you buy them?</p>
+    </div>
+    <div>
+      <div class="card accent-blue"><h3>Use the 24-hour rule</h3><ul><li>Wait before non-essential purchases.</li><li>Compare prices and alternatives.</li><li>Ask what you give up by spending the money.</li><li>Do not confuse a discount with a saving.</li></ul></div>
+      <p class="quote">Opportunity cost = what you give up when you choose one option over another.</p>
+    </div>
+  </div>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>05</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">05 • Saving</div><h2>Pay Yourself First</h2>
+  <div class="flow">
+    <div class="step">💼 Earn</div><div class="arrow">→</div>
+    <div class="step">🏦 Save</div><div class="arrow">→</div>
+    <div class="step">🛍️ Spend</div>
+  </div>
+  <div class="grid three">
+    <div class="card accent-blue"><div class="big-number">1</div><h3>Short-term goals</h3><p>Phone, laptop, trip, sports equipment.</p></div>
+    <div class="card accent-green"><div class="big-number">2</div><h3>Emergency savings</h3><p>Unexpected expenses can happen at any age.</p></div>
+    <div class="card accent-gold"><div class="big-number">3</div><h3>Long-term goals</h3><p>Education, independence, and future financial security.</p></div>
+  </div>
+  <div class="scenario"><h3>Think about it</h3><p>Your phone breaks and replacement costs $500. Where would the money come from?</p></div>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>06</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">06 • Banking</div><h2>Know Your Financial Tools</h2>
+  <div class="grid">
+    <div class="card accent-blue"><div class="icon">🏦</div><h3>Checking account</h3><p>Designed for everyday transactions and bill payments.</p></div>
+    <div class="card accent-green"><div class="icon">💰</div><h3>Savings account</h3><p>Designed to hold money for future use and goals.</p></div>
+    <div class="card accent-purple"><div class="icon">💳</div><h3>Debit card</h3><p>Typically draws money from your bank account when you spend.</p></div>
+    <div class="card accent-gold"><div class="icon">🧾</div><h3>Banking habits</h3><p>Monitor transactions, understand fees, protect passwords, and enable account security features.</p></div>
+  </div>
+  <p class="question">A bank account is a tool. The habit of monitoring it is the skill.</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>07</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">07 • Credit & debt</div><h2>Credit Is Borrowed Money — Not Free Money</h2>
+  <div class="scenario">
+    <h3>Scenario: A $1,000 laptop</h3>
+    <p>You purchase it with a credit card but cannot pay the full balance when the bill arrives.</p>
+    <div class="flow" style="margin-bottom:0">
+      <div class="step">💳 Credit</div><div class="arrow">→</div><div class="step">📈 Interest</div><div class="arrow">→</div><div class="step">⏳ Longer repayment</div>
+    </div>
+  </div>
+  <div class="grid three">
+    <div class="card accent-blue"><h3>Credit score</h3><p>A number influenced by factors such as payment history and credit usage.</p></div>
+    <div class="card accent-pink"><h3>APR / interest</h3><p>Borrowing can cost more than the original purchase price.</p></div>
+    <div class="card accent-green"><h3>Minimum payment</h3><p>Paying only the minimum can extend repayment and increase interest costs.</p></div>
+  </div>
+  <p class="note">Credit products differ. Always read the terms, fees, interest rate, and repayment requirements before borrowing.</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>08</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">08 • Saving vs. investing</div><h2>Let Time Work for You</h2>
+  <div class="grid">
+    <div class="card accent-blue"><h3>Saving</h3><p>Generally focuses on keeping money available for near-term needs and goals, with relatively low risk.</p><span class="badge">Access</span><span class="badge">Stability</span><span class="badge">Short term</span></div>
+    <div class="card accent-green"><h3>Investing</h3><p>Uses assets that can grow or lose value over time. Higher potential return usually comes with higher risk.</p><span class="badge">Growth</span><span class="badge">Risk</span><span class="badge">Long term</span></div>
+  </div>
+  <div class="scenario">
+    <h3>Compound growth</h3>
+    <p>Money can potentially earn returns, and those returns can themselves contribute to future growth. Starting earlier can provide more time for compounding to work.</p>
+  </div>
+  <p class="note">Key concepts to learn: diversification, risk, fees, time horizon, and long-term investing. Avoid treating investing as guaranteed profit.</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>09</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">09 • Income & careers</div><h2>Your Skills Can Increase Your Earning Potential</h2>
+  <div class="flow">
+    <div class="step">🧠 Skills</div><div class="arrow">→</div><div class="step">🎓 Learning</div><div class="arrow">→</div><div class="step">💼 Experience</div><div class="arrow">→</div><div class="step">💵 Income</div>
+  </div>
+  <div class="grid three">
+    <div class="card accent-blue"><h3>Part-time work</h3><p>Build reliability, communication, customer service, and workplace experience.</p></div>
+    <div class="card accent-green"><h3>Side projects</h3><p>Tutoring, design, coding, sports instruction, content, or other skills can create experience.</p></div>
+    <div class="card accent-gold"><h3>Entrepreneurship</h3><p>Find a problem, understand customers, manage costs, and test a solution.</p></div>
+  </div>
+  <p class="question">Ask: “What skill can I improve this year that someone may pay for later?”</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">10 • Business basics</div><h2>Revenue Is Not the Same as Profit</h2>
+  <div class="scenario">
+    <h3>Example: Custom T-shirt business</h3>
+    <div class="flow">
+      <div class="step">$25<br><small>selling price</small></div><div class="arrow">−</div>
+      <div class="step">$12<br><small>product cost</small></div><div class="arrow">=</div>
+      <div class="step">$13<br><small>gross profit*</small></div>
+    </div>
+    <p>*Before other business expenses such as marketing, shipping, payment processing, taxes, or software.</p>
+  </div>
+  <div class="grid three">
+    <div class="card accent-blue"><h3>Revenue</h3><p>Money received from sales.</p></div>
+    <div class="card accent-gold"><h3>Costs</h3><p>Money required to create and deliver the product or service.</p></div>
+    <div class="card accent-green"><h3>Profit</h3><p>What remains after relevant expenses are accounted for.</p></div>
+  </div>
+  <p class="question">Business question: “If I sell 100 shirts, how much do I actually keep?”</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>11</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">11 • Financial safety</div><h2>Spot the Scam Before It Costs You</h2>
+  <div class="grid">
+    <div class="card accent-pink"><h3>🚨 “You won!”</h3><p>“Send $100 first to claim your $5,000 prize.”</p></div>
+    <div class="card accent-gold"><h3>🚨 “Easy money!”</h3><p>“Work from home and earn $5,000 per week. No experience required.”</p></div>
+    <div class="card accent-purple"><h3>🚨 “Act now!”</h3><p>“Your bank account is compromised. Click this link immediately.”</p></div>
+    <div class="card accent-blue"><h3>🚨 “Secret investment!”</h3><p>“Guaranteed high returns with zero risk.”</p></div>
+  </div>
+  <div class="checklist">
+    <div class="check">🔍 Verify independently</div><div class="check">⏸️ Slow down under pressure</div>
+    <div class="check">🔐 Protect passwords & codes</div><div class="check">💳 Never send money to claim money</div>
+  </div>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>12</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">12 • Case study</div><h2>Meet Jordan: Put the Lessons Together</h2>
+  <div class="scenario">
+    <h3>Jordan is 18</h3>
+    <p>Income: <strong>$2,000/month</strong> • Spending: <strong>$1,800</strong> • Savings: <strong>$50</strong> • Credit-card debt: <strong>$3,000</strong> • Emergency savings: <strong>$0</strong> • Goal: buy a car and attend college</p>
+  </div>
+  <p class="question">What should Jordan think about first?</p>
+  <div class="grid three">
+    <div class="card"><h3>1. Cash flow</h3><p>Where can spending be adjusted without ignoring essential needs?</p></div>
+    <div class="card"><h3>2. Debt</h3><p>Understand interest, fees, and a realistic repayment plan.</p></div>
+    <div class="card"><h3>3. Goals</h3><p>Prioritize emergency savings and major goals based on timing and necessity.</p></div>
+  </div>
+  <p class="note">Discussion point: Different people can make different reasonable choices. The important skill is evaluating consequences and priorities.</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>13</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">13 • Decision framework</div><h2>Use the S.T.O.P. Test</h2>
+  <div class="rule"><b>S</b><div><strong>Do I really need it?</strong><span>Separate needs, wants, and short-term emotions.</span></div></div>
+  <div class="rule"><b>T</b><div><strong>What will it truly cost me?</strong><span>Consider price, interest, fees, maintenance, and opportunity cost.</span></div></div>
+  <div class="rule"><b>O</b><div><strong>What are my other options?</strong><span>Compare prices, alternatives, timing, and whether you can wait.</span></div></div>
+  <div class="rule"><b>P</b><div><strong>What happens if things go wrong?</strong><span>Think about emergencies, lost income, debt, or other downside risks.</span></div></div>
+  <p class="quote">Good financial decisions are rarely about “yes” or “no.” They are about understanding the consequences.</p>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>14</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">14 • Take action</div><h2>Create Your Personal Money Plan</h2>
+  <div class="grid">
+    <div class="card goal accent-blue"><h3>🎯 One savings goal</h3><p>What do you want to save for, and by when?</p></div>
+    <div class="card goal accent-green"><h3>✂️ One expense to reduce</h3><p>What spending habit could you improve?</p></div>
+    <div class="card goal accent-gold"><h3>🧠 One skill to build</h3><p>What skill could increase your future opportunities?</p></div>
+    <div class="card goal accent-purple"><h3>📚 One topic to learn</h3><p>Credit, taxes, investing, banking, business, or something else?</p></div>
+  </div>
+  <div class="scenario">
+    <h3>2-minute challenge</h3>
+    <p>Write one action you can take this month. Make it specific and measurable.</p>
+    <p><strong>Example:</strong> “I will save $25 from each paycheck for the next three months.”</p>
+  </div>
+  <div class="footer"><span>Financial Literacy for Teens</span><span>15</span></div>
+</section>
+
+<section class="slide hero center">
+  <div class="kicker">15 • Final takeaway</div>
+  <h2>Your Financial Future Starts With Small Decisions</h2>
+  <div class="flow">
+    <div class="step">💵 EARN</div><div class="arrow">→</div>
+    <div class="step">📊 MANAGE</div><div class="arrow">→</div>
+    <div class="step">💰 SAVE</div><div class="arrow">→</div>
+    <div class="step">📈 GROW</div><div class="arrow">→</div>
+    <div class="step">🛡️ PROTECT</div><div class="arrow">→</div>
+    <div class="step">🚀 BUILD</div>
+  </div>
+  <p class="quote" style="margin-left:auto;margin-right:auto">“What is ONE money decision you will make differently after today?”</p>
+  <p class="subtitle" style="margin-left:auto;margin-right:auto">Financial literacy is not just about money — it is about freedom, choices, confidence, and preparation.</p>
+  <div class="footer"><span>Financial Literacy for Teens • Thank you</span><span>16</span></div>
+</section>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="nav"><button onclick="prev()">‹</button><button onclick="next()">›</button></div>
+
+<script>
+let current=0;
+const slides=[...document.querySelectorAll('.slide')];
+function show(n){
+  current=Math.max(0,Math.min(n,slides.length-1));
+  slides.forEach((s,i)=>s.classList.toggle('active',i===current));
+  document.getElementById('progress').style.width=((current+1)/slides.length*100)+'%';
+}
+function next(){show(current+1)}
+function prev(){show(current-1)}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+  if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+  if(e.key==='Home'){show(0)}
+  if(e.key==='End'){show(slides.length-1)}
+});
+let startX=null;
+document.addEventListener('touchstart',e=>startX=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{
+  if(startX===null)return;
+  const dx=e.changedTouches[0].clientX-startX;
+  if(Math.abs(dx)>50)(dx<0?next:prev)();
+  startX=null;
+},{passive:true});
+show(0);
+</script>
+</body>
+</html>
